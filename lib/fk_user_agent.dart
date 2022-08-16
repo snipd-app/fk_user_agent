@@ -15,7 +15,8 @@ class FkUserAgent {
   /// the native platform.
   static Future init({force: false}) async {
     if (_properties == null || force) {
-      _properties = Map.unmodifiable(await (_channel.invokeMethod('getProperties')));
+      _properties =
+          Map.unmodifiable(await (_channel.invokeMethod('getProperties')));
     }
   }
 
@@ -28,11 +29,6 @@ class FkUserAgent {
   /// Returns the device's user agent.
   static String? get userAgent {
     return _properties!['userAgent'];
-  }
-
-  /// Returns the device's webview user agent.
-  static String? get webViewUserAgent {
-    return _properties!['webViewUserAgent'];
   }
 
   /// Fetch a [property] that can be used to build your own user agent string.

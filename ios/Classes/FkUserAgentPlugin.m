@@ -21,7 +21,6 @@
 }
 
 @synthesize isEmulator;
-@synthesize webView;
 
 //eg. Darwin/16.3.0
 - (NSString *)darwinVersion
@@ -156,20 +155,6 @@
 
 }
 
-- (void)getWebViewUserAgent:(void (^ _Nullable)(NSString * _Nullable webViewUserAgent, NSError * _Nullable error))completionHandler
-{
-    if (@available(ios 8.0, *)) {
-        if (self.webView == nil) {
-            // retain because `evaluateJavaScript:` is asynchronous
-            self.webView = [[WKWebView alloc] init];
-        }
-        // Not sure if this is really neccesary
-        [self.webView loadHTMLString:@"<html></html>" baseURL:nil];
-
-        [self.webView evaluateJavaScript:@"navigator.userAgent" completionHandler:completionHandler];
-    }
-}
-
 - (void)constantsToExport:(void  (^ _Nullable)(NSDictionary * _Nonnull constants))completionHandler
 {
     UIDevice *currentDevice = [UIDevice currentDevice];
@@ -183,22 +168,19 @@
 
     NSString *userAgent = [NSString stringWithFormat:@"CFNetwork/%@ Darwin/%@ (%@ %@/%@)", cfnVersion, darwinVersion, deviceName, currentDevice.systemName, currentDevice.systemVersion];
 
-    [self getWebViewUserAgent:^(NSString * _Nullable webViewUserAgent, NSError * _Nullable error) {
-        completionHandler(@{
-          @"isEmulator": @(self.isEmulator),
-          @"systemName": currentDevice.systemName,
-          @"systemVersion": currentDevice.systemVersion,
-          @"applicationName": appName,
-          @"applicationVersion": appVersion,
-          @"buildNumber": buildNumber,
-          @"darwinVersion": darwinVersion,
-          @"cfnetworkVersion": cfnVersion,
-          @"deviceName": deviceName,
-          @"packageUserAgent": [NSString stringWithFormat:@"%@/%@.%@ %@", appName, appVersion, buildNumber, userAgent],
-          @"userAgent": userAgent,
-          @"webViewUserAgent": webViewUserAgent ?: [NSNull null]
-        });
-    }];
+    completionHandler(@{
+      @"isEmulator": @(self.isEmulator),
+      @"systemName": currentDevice.systemName,
+      @"systemVersion": currentDevice.systemVersion,
+      @"applicationName": appName,
+      @"applicationVersion": appVersion,
+      @"buildNumber": buildNumber,
+      @"darwinVersion": darwinVersion,
+      @"cfnetworkVersion": cfnVersion,
+      @"deviceName": deviceName,
+      @"packageUserAgent": [NSString stringWithFormat:@"%@/%@.%@ %@", appName, appVersion, buildNumber, userAgent],
+      @"userAgent": userAgent,
+    });
 }
 
 @end

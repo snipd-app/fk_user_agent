@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
@@ -81,7 +79,6 @@ public class FkUserAgentPlugin implements FlutterPlugin, MethodCallHandler {
         constants.put("applicationBuildNumber", buildNumber);
         constants.put("packageUserAgent", packageUserAgent);
         constants.put("userAgent", userAgent);
-        constants.put("webViewUserAgent", getWebViewUserAgent());
 
         return constants;
     }
@@ -92,31 +89,6 @@ public class FkUserAgentPlugin implements FlutterPlugin, MethodCallHandler {
         }
 
         return "";
-    }
-
-    private String getWebViewUserAgent() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return WebSettings.getDefaultUserAgent(applicationContext);
-        }
-
-        WebView webView = new WebView(applicationContext);
-        String userAgentString = webView.getSettings().getUserAgentString();
-
-        destroyWebView(webView);
-
-        return userAgentString;
-    }
-
-    private void destroyWebView(WebView webView) {
-        webView.loadUrl("about:blank");
-        webView.stopLoading();
-
-        webView.clearHistory();
-        webView.removeAllViews();
-        webView.destroyDrawingCache();
-
-        // NOTE: This can occasionally cause a segfault below API 17 (4.2)
-        webView.destroy();
     }
 
     @Override
